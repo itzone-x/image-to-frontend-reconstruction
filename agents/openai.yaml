@@ -1,0 +1,4 @@
+interface:
+  display_name: "Image to Frontend"
+  short_description: "Rebuild UI from reference images"
+  default_prompt: "Use this skill to reconstruct a frontend page from a visual reference image, extracting source-derived assets where fidelity matters."
