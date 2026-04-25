@@ -45,14 +45,14 @@ mkdir -p ~/.codex/skills/image-to-frontend-reconstruction
 cp -R SKILL.md agents scripts ~/.codex/skills/image-to-frontend-reconstruction/
 ```
 
-如果你使用 Claude Code 或 Claude Desktop 的 skill 机制，也可以把同样的文件复制到对应的 skill 目录中。
+如果你使用 Claude Code 或 Claude Desktop 的 skill 机制，也可以把同样的文件复制到对应的 skill 目录中，当然其他大语言模型只要支持skill的都可以直接使用。
 
 ## 使用方式
 
 当你需要根据一张视觉参考图实现页面时，可以这样要求你的 coding agent：
 
 ```text
-请使用 image-to-frontend-reconstruction，根据 /path/to/reference.png 还原这个页面。
+请使用 image-to-frontend-reconstruction和 frontend-design（同步搭配frontend-design这个skill效果会更好），根据 /path/to/reference.png（这里就是你设计稿或者要参考实现的图片） 还原这个页面。
 复杂图标和背景装饰尽量从原图提取，文字和交互控件保持前端原生实现。
 ```
 
