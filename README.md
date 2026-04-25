@@ -1,27 +1,27 @@
 # Image to Frontend Reconstruction
 
-`image-to-frontend-reconstruction` is a Codex/Claude skill for rebuilding frontend pages from raster UI references, AI-generated mockups, screenshots, and design comps with higher visual fidelity.
+`image-to-frontend-reconstruction` 是一个面向 Codex/Claude 的 skill，用来把 UI 参考图、AI 生成的产品原型图、截图或设计稿，高保真地还原成前端页面。
 
-The core idea is simple: do not ask the model to redraw everything from memory. Split the reference into native UI, extracted image assets, and low-risk CSS primitives. Text, layout, buttons, and controls stay native. Detailed icons, decorative motifs, textures, and generated illustration fragments are cropped from the source image when fidelity matters.
+它的核心思路很直接：不要让大模型凭感觉把整张图重新“画”一遍，而是先把参考图拆成三层：原生前端 UI、从原图提取的图片资产，以及低风险的 CSS 基础图形。文字、布局、按钮、输入框等内容用前端原生实现；复杂图标、装饰纹理、插画碎片、背景元素等容易走样的部分，则尽量从原始设计图中切出来使用。
 
-## Why This Exists
+## 为什么做这个 Skill
 
-Tools such as Stitch, Figma, and GPT Image can produce polished product mockups quickly. The hard part often starts after that: turning the image into a real frontend page.
+Stitch、Figma、GPT Image 这类工具，已经可以很快生成观感不错的产品设计稿。真正麻烦的地方通常出现在下一步：怎么把这张图变成真实可用的前端页面。
 
-For non-frontend builders, there may be no designer available to slice assets. For frontend agents, direct image-to-code reconstruction is still easy to get wrong: the model may "paint" a similar page, but it is not truly slicing the design. Small icon details, spacing, background motifs, and button treatment drift quickly.
+如果你不是前端开发，也没有专业 UI 设计师帮你切图，落地过程很容易卡住。即使交给大模型直接“看图写页面”，效果也经常会有偏差：模型能生成一个看起来相似的页面，但它不是在做真正的设计稿切图。图标细节、间距、背景纹理、按钮质感、卡片层次，都可能在实现时慢慢漂移。
 
-This skill captures a practical reconstruction workflow inspired by UI slicing and frontend implementation:
+这个 skill 固化了一套更接近真实 UI 切图和前端开发的流程：
 
-- inspect the reference at original resolution;
-- reverse-engineer typography, spacing, color, radius, and hierarchy;
-- classify each visual element before coding;
-- extract hard-to-recreate assets from the source image;
-- render text, controls, and layout natively;
-- verify the page across realistic viewport sizes.
+- 先查看原图尺寸和真实像素，不凭缩略图猜测；
+- 反推出颜色、字体层级、间距、圆角、阴影和卡片结构；
+- 编码前先判断每个视觉元素应该原生实现、切图提取，还是用 CSS 简单绘制；
+- 对复杂图标、背景装饰、纹理和插画碎片进行确定性的资产提取；
+- 文字、控件和布局保持前端原生，方便后续改文案、加交互和做适配；
+- 在多个真实设备宽度下检查效果，而不是只对齐一张截图。
 
-In the author's own experiments, this approach reached roughly 90% fidelity on many consumer-facing mockups, and even higher fidelity on some backend/admin interface references where the design system is more regular.
+作者在多种场景中试用后发现，这套方法在不少 To C 高保真原型上大约能达到 90% 左右的还原度；对于一些组件更规整的后台或管理系统页面，部分场景可以做到更接近原稿的复刻效果。
 
-## Repository Layout
+## 仓库结构
 
 ```text
 .
@@ -36,27 +36,27 @@ In the author's own experiments, this approach reached roughly 90% fidelity on m
 └── LICENSE
 ```
 
-## Install
+## 安装
 
-For Codex:
+Codex 用户可以复制到本地 skills 目录：
 
 ```bash
 mkdir -p ~/.codex/skills/image-to-frontend-reconstruction
 cp -R SKILL.md agents scripts ~/.codex/skills/image-to-frontend-reconstruction/
 ```
 
-For Claude Code or Claude Desktop skill setups, copy the same files into the matching skill directory used by your environment.
+如果你使用 Claude Code 或 Claude Desktop 的 skill 机制，也可以把同样的文件复制到对应的 skill 目录中。
 
-## Use
+## 使用方式
 
-Ask your coding agent to use this skill when implementing from a visual reference:
+当你需要根据一张视觉参考图实现页面时，可以这样要求你的 coding agent：
 
 ```text
-Use image-to-frontend-reconstruction to rebuild this page from /path/to/reference.png.
-Extract detailed icons and decorative motifs from the image, but keep text and controls native.
+请使用 image-to-frontend-reconstruction，根据 /path/to/reference.png 还原这个页面。
+复杂图标和背景装饰尽量从原图提取，文字和交互控件保持前端原生实现。
 ```
 
-The included helper can crop explicit image boxes or create a transparent decoration overlay:
+仓库内附带了一个小工具，可以按坐标裁剪图片资产，也可以生成透明背景装饰层：
 
 ```bash
 python3 scripts/extract_reference_assets.py \
@@ -67,17 +67,17 @@ python3 scripts/extract_reference_assets.py \
   --mask 0,120,390,640
 ```
 
-The script requires Pillow:
+脚本依赖 Pillow：
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## What This Skill Is Not
+## 它不是什么
 
-This is not a magic "screenshot to perfect app" button. It is a workflow guardrail.
+它不是“上传截图，自动生成完美 App”的魔法按钮，而是一套约束大模型工作方式的流程。
 
-It works best when the original reference image is available, the target frontend project can serve local assets, and someone can visually inspect the result. Font rendering, platform controls, responsive behavior, and image scaling can still create differences that need human review.
+它最适合这样的场景：你有原始参考图，目标前端项目可以引用本地图片资产，并且最终有人愿意做一轮视觉检查。字体渲染、平台控件差异、响应式适配、图片缩放方式等因素，仍然可能带来细微差异，需要人工判断和微调。
 
 ## License
 
