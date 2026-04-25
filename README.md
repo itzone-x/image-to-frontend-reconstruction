@@ -52,8 +52,26 @@ cp -R SKILL.md agents scripts ~/.codex/skills/image-to-frontend-reconstruction/
 当你需要根据一张视觉参考图实现页面时，可以这样要求你的 coding agent：
 
 ```text
-请使用 image-to-frontend-reconstruction和 frontend-design（同步搭配frontend-design这个skill效果会更好），根据 /path/to/reference.png（这里就是你设计稿或者要参考实现的图片） 还原这个页面。
-复杂图标和背景装饰尽量从原图提取，文字和交互控件保持前端原生实现。
+  之后你只要在需求里明确提到它即可，例如：
+  使用 image-to-frontend-reconstruction skill，基于 /path/to/reference.png 高保真还原问答页。
+
+  或者更自然一点：
+  请按这张 GPT Image2 视觉稿高保真还原页面，图标和背景装饰优先从原图裁切，不要手绘近似。
+
+  它会触发的典型场景包括：
+  - “根据这张图还原前端页面”
+  - “把 GPT Image2 生成的视觉稿落成小程序或者你想要的页面”
+  - “图标不要手绘，直接从参考图切图”
+  - “从截图/设计稿提取背景装饰并实现页面”
+  - “高保真还原 UI mockup”
+
+  推荐你后续这样给这个skill任务，作者已多次验证效果：
+  使用 image-to-frontend-reconstruction 和 frontend-design。
+  参考图在 miniprogram/path/to/reference.png。（注意：这里是你存放参考图的地址，参考图一定要指定地址）
+  目标页面是 miniprogram/pages/intake/。（注意：这里的目标页面指的是你要开发实现的页面，skill会根据参考图直接在这里生成你想要的高保真复刻页面）
+  要求：保留现有业务逻辑和文案，按参考图高保真还原 UI；图标、背景纹理、装饰元素从参考图提取资产。
+
+  skill就会按这个流程执行：读参考图 → 反推 UI 规范 → 判断哪些用原生 UI、哪些切图 → 生成 assets → 改 WXML/WXSS → 更新测试 → 跑验证。
 ```
 
 仓库内附带了一个小工具，可以按坐标裁剪图片资产，也可以生成透明背景装饰层：
