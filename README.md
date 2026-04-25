@@ -53,7 +53,7 @@ cp -R SKILL.md agents scripts ~/.codex/skills/image-to-frontend-reconstruction/
 
 ```text
   之后你只要在需求里明确提到它即可，例如：
-  使用 image-to-frontend-reconstruction skill，基于 /path/to/reference.png 高保真还原问答页。
+  使用 image-to-frontend-reconstruction skill，基于 /path/to/reference.png 高保真还原前端页面。
 
   或者更自然一点：
   请按这张 GPT Image2 视觉稿高保真还原页面，图标和背景装饰优先从原图裁切，不要手绘近似。
